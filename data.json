@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "songs": [
+    {
+      "id": 1,
+      "title": "Midnight Drive",
+      "artist": "Neon Waves",
+      "album": "City Lights",
+      "duration": "3:45",
+      "genre": "Synthwave",
+      "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+    },
+    {
+      "id": 2,
+      "title": "Monsoon Mixtape",
+      "artist": "Desi Beats Collective",
+      "album": "Rain Season",
+      "duration": "4:02",
+      "genre": "Lo-fi",
+      "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+    },
+    {
+      "id": 3,
+      "title": "Golden Hour",
+      "artist": "Sunny Avenue",
+      "album": "Daydreams",
+      "duration": "3:18",
+      "genre": "Pop",
+      "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+    },
+    {
+      "id": 4,
+      "title": "Paper Planes",
+      "artist": "The Wanderers",
+      "album": "Open Roads",
+      "duration": "2:58",
+      "genre": "Rock",
+      "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+    },
+    {
+      "id": 5,
+      "title": "Velvet Rain",
+      "artist": "Luna Jazz Trio",
+      "album": "Blue Evenings",
+      "duration": "4:30",
+      "genre": "Jazz",
+      "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
+    },
+    {
+      "id": 6,
+      "title": "Concrete Rhythm",
+      "artist": "MC Atlas",
+      "album": "Street Poetry",
+      "duration": "3:36",
+      "genre": "Hip-Hop",
+      "src": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
+    }
+  ]
+}

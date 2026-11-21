@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SoundWave - stream trending tracks, discover new artists and build playlists.">
+  <meta name="theme-color" content="#121212">
+  <title>SoundWave - Web Music Player</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%231db954'/%3E%3Cg fill='%23121212'%3E%3Crect x='9' y='19' width='4' height='10' rx='2'/%3E%3Crect x='16' y='13' width='4' height='22' rx='2'/%3E%3Crect x='23' y='8' width='4' height='32' rx='2'/%3E%3Crect x='30' y='15' width='4' height='18' rx='2'/%3E%3Crect x='37' y='20' width='4' height='8' rx='2'/%3E%3C/g%3E%3C/svg%3E">
+
+  <!-- Typography: Outfit for headings, Inter for body text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Internal styles: small page-specific rules -->
+  <style>
+    .fun-fact {
+      background-color: #1c1f1d;
+      border: 1px solid #2a3a30;
+      border-left: 4px solid #1db954;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 16px;
+    }
+    .fun-fact h3 { color: #1db954; font-size: 16px; }
+    .fun-fact ul { margin: 6px 0 0 0; padding-left: 20px; color: #cfcfcf; }
+    .skeleton-row {
+      height: 56px;
+      margin: 8px 0;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #1f1f1f 25%, #2a2a2a 37%, #1f1f1f 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.4s ease infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 100% 50%; }
+      100% { background-position: 0 50%; }
+    }
+  </style>
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="showWelcome()">
+
+<!-- Icon sprite and logo gradient (referenced with <use>) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="swGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1ed760"/>
+      <stop offset="1" stop-color="#0c8f3f"/>
+    </linearGradient>
+  </defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></symbol>
+  <symbol id="i-library" viewBox="0 0 24 24"><path d="M4 4v16M9 4v16"/><path d="M14 5.5l5 1-3.2 13.5-5-1z"/></symbol>
+  <symbol id="i-quiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M7 4.6v14.8a1 1 0 0 0 1.5.86l12-7.4a1 1 0 0 0 0-1.72l-12-7.4A1 1 0 0 0 7 4.6z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect fill="currentColor" stroke="none" x="6" y="4" width="4.5" height="16" rx="1.2"/><rect fill="currentColor" stroke="none" x="13.5" y="4" width="4.5" height="16" rx="1.2"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M5 5.2v13.6a.9.9 0 0 0 1.4.75l10-6.8a.9.9 0 0 0 0-1.5l-10-6.8A.9.9 0 0 0 5 5.2z"/><rect fill="currentColor" stroke="none" x="17.5" y="5" width="2.5" height="14" rx="1.2"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M19 5.2v13.6a.9.9 0 0 1-1.4.75l-10-6.8a.9.9 0 0 1 0-1.5l10-6.8A.9.9 0 0 1 19 5.2z"/><rect fill="currentColor" stroke="none" x="4" y="5" width="2.5" height="14" rx="1.2"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <nav class="sidebar" aria-label="Main navigation">
+
+    <a class="brand" href="#home" aria-label="SoundWave home">
+      <svg class="logo-mark" viewBox="0 0 48 48" role="img" aria-label="SoundWave logo">
+        <rect width="48" height="48" rx="12" fill="url(#swGrad)"/>
+        <g fill="#0b0b0b">
+          <rect class="eq-bar b1" x="9"  y="19" width="4" height="10" rx="2"/>
+          <rect class="eq-bar b2" x="16" y="13" width="4" height="22" rx="2"/>
+          <rect class="eq-bar b3" x="23" y="8"  width="4" height="32" rx="2"/>
+          <rect class="eq-bar b4" x="30" y="15" width="4" height="18" rx="2"/>
+          <rect class="eq-bar b5" x="37" y="20" width="4" height="8"  rx="2"/>
+        </g>
+      </svg>
+      <span class="wordmark" style="font-family:'Outfit',sans-serif; font-weight:700; letter-spacing:-0.5px;">SoundWave</span>
+    </a>
+
+    <ul class="nav-list">
+      <li><a href="#home" data-view="home" class="active"><svg class="icon"><use href="#i-home"></use></svg><span>Home</span></a></li>
+      <li><a href="#charts" data-view="charts"><svg class="icon"><use href="#i-chart"></use></svg><span>Top Charts</span></a></li>
+      <li><a href="#library" data-view="library"><svg class="icon"><use href="#i-library"></use></svg><span>Your Library</span></a></li>
+      <li><a href="#play" data-view="play"><svg class="icon"><use href="#i-quiz"></use></svg><span>Play &amp; Learn</span></a></li>
+      <li><a href="#account" data-view="account"><svg class="icon"><use href="#i-settings"></use></svg><span>Account</span></a></li>
+    </ul>
+
+    <div class="storage-card">
+      <label for="storageMeter">Library storage</label>
+      <meter id="storageMeter" min="0" max="100" low="40" high="80" optimum="20" value="65">65 MB</meter>
+      <small>65 MB of 100 MB used</small>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- ============ TOP BAR ============ -->
+    <header class="topbar">
+      <div class="search-wrap">
+        <svg class="icon search-ico"><use href="#i-search"></use></svg>
+        <input type="search" id="searchBox" placeholder="Search songs or artists" autofocus autocomplete="off"
+               onfocus="if (window.highlightSearch) highlightSearch(this)"
+               onblur="if (window.unhighlightSearch) unhighlightSearch(this)"
+               oninput="filterSongs()">
+      </div>
+      <div class="topbar-actions">
+        <button type="button" class="btn" onclick="openModal()">Sign up</button>
+        <span class="avatar" title="Guest account">G</span>
+      </div>
+    </header>
+
+    <main id="main">
+
+      <!-- ================= HOME ================= -->
+      <section class="view active" id="view-home">
+
+        <section class="hero">
+          <div class="hero-text">
+            <p class="eyebrow">Music for every moment</p>
+            <h1 id="greeting">Welcome back</h1>
+            <p class="hero-sub">Stream trending tracks, discover new artists and build playlists, all in one place.</p>
+            <div class="hero-actions">
+              <button type="button" class="btn btn-lg" onclick="playSong(0)">
+                <svg class="icon icon-sm"><use href="#i-play"></use></svg> Play featured
+              </button>
+              <a class="btn btn-secondary btn-lg" href="#charts">Browse charts</a>
+            </div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <span style="--h:40%;  --d:0s"></span>
+            <span style="--h:70%;  --d:.15s"></span>
+            <span style="--h:100%; --d:.3s"></span>
+            <span style="--h:60%;  --d:.45s"></span>
+            <span style="--h:85%;  --d:.6s"></span>
+            <span style="--h:45%;  --d:.75s"></span>
+            <span style="--h:75%;  --d:.9s"></span>
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <article class="card now-card">
+            <h2 class="card-title">Now Playing</h2>
+            <div class="now-body">
+              <img id="npCover" class="now-cover" data-art="0" alt="Current album cover">
+              <div class="now-info">
+                <h3 id="npTitle">Midnight Drive</h3>
+                <p id="npArtist" class="muted">Neon Waves</p>
+                <p id="npAlbum" class="muted small">City Lights</p>
+              </div>
+            </div>
+            <audio id="audioPlayer" controls preload="none"
+                   src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+              Your browser does not support the audio element.
+            </audio>
+            <div class="share-row">
+              <svg class="icon icon-sm"><use href="#i-share"></use></svg>
+              <label for="selectDemo" class="sr-only">Share link</label>
+              <input type="text" id="selectDemo" value="https://soundwave.app/track/midnight-drive" readonly onselect="textSelected(this)">
+            </div>
+          </article>
+
+          <article class="card video-card">
+            <h2 class="card-title">Featured Clip</h2>
+            <video controls width="320" height="240" preload="none">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+              Your browser does not support the video element.
+            </video>
+            <p class="muted small">Watch behind-the-scenes clips from your favourite artists.</p>
+          </article>
+        </div>
+
+        <section class="block" id="albums">
+          <div class="block-head">
+            <h2>Popular albums</h2>
+            <a class="link-more" href="#library">Show all <svg class="icon icon-sm"><use href="#i-arrow"></use></svg></a>
+          </div>
+          <div class="album-grid">
+
+            <article class="album-card" onclick="playSong(0)">
+              <div class="img-wrap">
+                <img class="cover" data-art="0" alt="City Lights album cover">
+                <div class="overlay"><span class="play-icon"><svg class="icon icon-lg"><use href="#i-play"></use></svg></span></div>
+              </div>
+              <h3>City Lights</h3>
+              <p>Neon Waves</p>
+            </article>
+
+            <article class="album-card" onclick="playSong(1)">
+              <div class="img-wrap">
+                <img class="cover" data-art="1" alt="Rain Season album cover">
+                <div class="overlay"><span class="play-icon"><svg class="icon icon-lg"><use href="#i-play"></use></svg></span></div>
+              </div>
+              <h3>Rain Season</h3>
+              <p>Desi Beats Collective</p>
+            </article>
+
+            <article class="album-card" onclick="playSong(2)">
+              <div class="img-wrap">
+                <img class="cover" data-art="2" alt="Daydreams album cover">
+                <div class="overlay"><span class="play-icon"><svg class="icon icon-lg"><use href="#i-play"></use></svg></span></div>
+              </div>
+              <h3>Daydreams</h3>
+              <p>Sunny Avenue</p>
+            </article>
+
+            <article class="album-card" onclick="playSong(3)">
+              <div class="img-wrap">
+                <img class="cover" data-art="3" alt="Open Roads album cover">
+                <div class="overlay"><span class="play-icon"><svg class="icon icon-lg"><use href="#i-play"></use></svg></span></div>
+              </div>
+              <h3>Open Roads</h3>
+              <p>The Wanderers</p>
+            </article>
+
+            <article class="album-card" onclick="playSong(4)">
+              <div class="img-wrap">
+                <img class="cover" data-art="4" alt="Blue Evenings album cover">
+                <div class="overlay"><span class="play-icon"><svg class="icon icon-lg"><use href="#i-play"></use></svg></span></div>
+              </div>
+              <h3>Blue Evenings</h3>
+              <p>Luna Jazz Trio</p>
+            </article>
+
+            <article class="album-card" onclick="playSong(5)">
+              <div class="img-wrap">
+                <img class="cover" data-art="5" alt="Street Poetry album cover">
+                <div class="overlay"><span class="play-icon"><svg class="icon icon-lg"><use href="#i-play"></use></svg></span></div>
+              </div>
+              <h3>Street Poetry</h3>
+              <p>MC Atlas</p>
+            </article>
+
+          </div>
+        </section>
+
+        <div class="two-col">
+          <section id="artist">
+            <article class="card artist-bio">
+              <h2 class="card-title">Artist Spotlight</h2>
+              <img id="artistImg" class="artist-img" data-art="6" alt="Artwork for the band Neon Waves">
+              <h3>Neon Waves</h3>
+              <p>
+                Neon Waves is a synthwave duo known for late-night driving anthems and glowing,
+                retro-futuristic production. Their debut album <em>City Lights</em> topped the
+                streaming charts in its first week.
+              </p>
+              <p>
+                Learn more about how music works on the web at
+                <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API" target="_blank" rel="noopener">MDN Web Docs</a>
+                or explore the basics of HTML at
+                <a href="https://www.w3schools.com/html/" target="_blank" rel="noopener">W3Schools</a>.
+              </p>
+
+              <section class="fun-fact">
+                <h3>Fun fact: Einstein &amp; music</h3>
+                <ul>
+                  <li>Albert Einstein was born in Ulm, Germany, in 1879.</li>
+                  <li>He played the violin from childhood and loved music all his life.</li>
+                  <li>He won the 1921 Nobel Prize in Physics for explaining the photoelectric effect.</li>
+                </ul>
+              </section>
+            </article>
+          </section>
+
+          <aside class="card side-info">
+            <h2 class="card-title">Genres</h2>
+            <ul class="genre-list">
+              <li>Synthwave</li>
+              <li>Lo-fi</li>
+              <li>Pop</li>
+              <li>Rock</li>
+              <li>Jazz</li>
+              <li>Hip-Hop</li>
+            </ul>
+
+            <h2 class="card-title">Top Tracks</h2>
+            <ol class="top-tracks">
+              <li>Midnight Drive</li>
+              <li>Monsoon Mixtape</li>
+              <li>Golden Hour</li>
+              <li>Paper Planes</li>
+              <li>Velvet Rain</li>
+            </ol>
+          </aside>
+        </div>
+
+        <section class="block" id="recommended">
+          <div class="block-head">
+            <h2>Recommended for you</h2>
+            <button type="button" class="btn btn-secondary" onclick="postMultipleSongs()">Get recommendations</button>
+          </div>
+          <ul id="recoList" class="reco-list">
+            <li class="empty">Tap "Get recommendations" to see tracks picked for you.</li>
+          </ul>
+        </section>
+      </section>
+
+      <!-- ================= TOP CHARTS ================= -->
+      <section class="view" id="view-charts">
+        <h1 class="view-title">Top Charts</h1>
+        <p class="view-sub">The most streamed tracks on SoundWave this week.
+          <a href="https://en.wikipedia.org/wiki/Record_chart" target="_blank" rel="noopener">How do music charts work?</a>
+        </p>
+        <div class="table-wrap">
+          <table>
+            <caption>Weekly top 5</caption>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Track</th>
+                <th>Artist</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="rank">1</td><td>Midnight Drive</td><td>Neon Waves</td><td>3:45</td></tr>
+              <tr><td class="rank">2</td><td>Monsoon Mixtape</td><td>Desi Beats Collective</td><td>4:02</td></tr>
+              <tr><td class="rank">3</td><td>Golden Hour</td><td>Sunny Avenue</td><td>3:18</td></tr>
+              <tr><td class="rank">4</td><td>Paper Planes</td><td>The Wanderers</td><td>2:58</td></tr>
+              <tr><td class="rank">5</td><td>Velvet Rain</td><td>Luna Jazz Trio</td><td>4:30</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= LIBRARY ================= -->
+      <section class="view" id="view-library">
+        <h1 class="view-title">Your Library</h1>
+        <p class="view-sub">Songs synced from the SoundWave server. Click a song to play it.</p>
+
+        <section class="card" id="songs">
+          <div class="block-head">
+            <h2 class="card-title">All Songs</h2>
+            <button type="button" class="btn btn-secondary" onclick="loadSongsJSON()">Refresh</button>
+          </div>
+          <div class="song-head">
+            <span>#</span><span>Title</span><span class="song-album">Album</span><span class="song-genre">Genre</span><span class="song-time">Time</span>
+          </div>
+          <div id="songList">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="card">
+            <h2 class="card-title">Lyrics</h2>
+            <div class="inline-form">
+              <label for="lyricsSelect" class="sr-only">Choose a song</label>
+              <select id="lyricsSelect">
+                <option value="1">Midnight Drive</option>
+                <option value="2">Monsoon Mixtape</option>
+                <option value="3">Golden Hour</option>
+                <option value="4">Paper Planes</option>
+                <option value="5">Velvet Rain</option>
+                <option value="6">Concrete Rhythm</option>
+              </select>
+              <button type="button" class="btn" onclick="loadLyrics()">Show lyrics</button>
+            </div>
+            <pre id="lyricsOutput" class="output-box">Pick a song to read its lyrics.</pre>
+          </section>
+
+          <section class="card">
+            <h2 class="card-title">Playlists</h2>
+            <form id="playlistForm" onsubmit="return submitPlaylist(event)">
+              <fieldset>
+                <legend>Add a song to a playlist</legend>
+                <div class="field">
+                  <label for="plName">Playlist name</label>
+                  <input type="text" id="plName" placeholder="e.g. Road Trip" required>
+                </div>
+                <div class="field">
+                  <label for="plSong">Song</label>
+                  <input type="text" id="plSong" placeholder="e.g. Golden Hour" required>
+                </div>
+                <div class="btn-row">
+                  <button type="submit" class="btn">Add to playlist</button>
+                  <button type="button" class="btn btn-secondary" onclick="viewPlaylistLog()">View activity</button>
+                  <button type="button" class="btn btn-secondary" onclick="clearPlaylistLog()">Clear activity</button>
+                </div>
+              </fieldset>
+            </form>
+            <div id="playlistActivity" class="output-box">Playlist activity will appear here.</div>
+          </section>
+        </div>
+
+        <section class="card">
+          <div class="block-head">
+            <h2 class="card-title">Library Insights</h2>
+            <button type="button" class="btn" id="reportBtn" onclick="runLibraryReport()">Generate report</button>
+          </div>
+          <div id="libraryReport" class="output-box">Generate a report to see an overview of your catalogue, genres and membership.</div>
+        </section>
+      </section>
+
+      <!-- ================= PLAY & LEARN ================= -->
+      <section class="view" id="view-play">
+        <h1 class="view-title">Play &amp; Learn</h1>
+        <p class="view-sub">Test your music knowledge and explore stats about your library.</p>
+
+        <div class="grid-2">
+          <section class="card">
+            <div class="block-head">
+              <h2 class="card-title">Listening Stats</h2>
+              <button type="button" class="btn" onclick="runStats()">Calculate</button>
+            </div>
+            <div id="statsOutput" class="output-box">Calculate to see your library's total runtime, averages and mood.</div>
+          </section>
+
+          <section class="card">
+            <h2 class="card-title">Music Quiz</h2>
+            <form id="quizForm" onsubmit="return false">
+              <div class="field">
+                <label for="quizName">Player name</label>
+                <input type="text" id="quizName" placeholder="Your name">
+              </div>
+
+              <div class="quiz-q">
+                <p>1. How many strings does a standard guitar have?</p>
+                <label><input type="radio" name="q1" value="4"> 4</label>
+                <label><input type="radio" name="q1" value="6"> 6</label>
+                <label><input type="radio" name="q1" value="8"> 8</label>
+              </div>
+
+              <div class="quiz-q">
+                <p>2. Which instrument has black and white keys?</p>
+                <label><input type="radio" name="q2" value="Piano"> Piano</label>
+                <label><input type="radio" name="q2" value="Flute"> Flute</label>
+                <label><input type="radio" name="q2" value="Violin"> Violin</label>
+              </div>
+
+              <div class="quiz-q">
+                <p>3. How many beats are in one bar of a waltz?</p>
+                <label><input type="radio" name="q3" value="2"> 2</label>
+                <label><input type="radio" name="q3" value="3"> 3</label>
+                <label><input type="radio" name="q3" value="4"> 4</label>
+              </div>
+
+              <div class="quiz-q">
+                <p>4. Which of these is a percussion instrument?</p>
+                <label><input type="radio" name="q4" value="Drums"> Drums</label>
+                <label><input type="radio" name="q4" value="Trumpet"> Trumpet</label>
+                <label><input type="radio" name="q4" value="Cello"> Cello</label>
+              </div>
+
+              <div class="quiz-q">
+                <p>5. What does BPM stand for in music?</p>
+                <label><input type="radio" name="q5" value="Beats per minute"> Beats per minute</label>
+                <label><input type="radio" name="q5" value="Bass per mix"> Bass per mix</label>
+                <label><input type="radio" name="q5" value="Bars per measure"> Bars per measure</label>
+              </div>
+
+              <button type="button" class="btn" onclick="calculateQuiz()">Check my score</button>
+            </form>
+            <div id="quizResult" class="output-box">Your result will appear here.</div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ================= ACCOUNT ================= -->
+      <section class="view" id="view-account">
+        <h1 class="view-title">Account</h1>
+        <p class="view-sub">Manage your preferences, backups and feedback.</p>
+
+        <div class="grid-2">
+          <section class="card">
+            <h2 class="card-title">Preferences</h2>
+            <form id="prefForm" onsubmit="return handlePrefSubmit(event)" onreset="return handlePrefReset()">
+              <fieldset>
+                <legend>Listener profile</legend>
+
+                <div class="field">
+                  <label for="username">Username</label>
+                  <input type="text" id="username" name="username" placeholder="e.g. musiclover" required>
+                </div>
+
+                <div class="field">
+                  <label for="prefEmail">Email</label>
+                  <input type="email" id="prefEmail" name="email" placeholder="you@example.com" required
+                         pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" title="Enter a valid email address">
+                </div>
+
+                <div class="field">
+                  <label for="prefPhone">Phone</label>
+                  <input type="text" id="prefPhone" name="phone" placeholder="10-digit number" required
+                         pattern="[0-9]{10}" title="Enter exactly 10 digits">
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Streaming quality</span>
+                  <div class="choice-row">
+                    <label><input type="radio" name="quality" value="Low"> Low</label>
+                    <label><input type="radio" name="quality" value="Normal" checked> Normal</label>
+                    <label><input type="radio" name="quality" value="High"> High</label>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <span class="field-label">Interests</span>
+                  <div class="choice-row">
+                    <label><input type="checkbox" name="interest" value="Concerts"> Concerts</label>
+                    <label><input type="checkbox" name="interest" value="Podcasts"> Podcasts</label>
+                    <label><input type="checkbox" name="interest" value="New releases"> New releases</label>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="favGenre">Favourite genre</label>
+                  <select id="favGenre" name="favGenre">
+                    <option value="Synthwave">Synthwave</option>
+                    <option value="Lo-fi">Lo-fi</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Rock">Rock</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Hip-Hop">Hip-Hop</option>
+                  </select>
+                </div>
+
+                <div class="btn-row">
+                  <button type="submit" class="btn">Save preferences</button>
+                  <button type="reset" class="btn btn-secondary">Reset</button>
+                </div>
+              </fieldset>
+            </form>
+            <div id="prefOutput" class="output-box">Your saved preferences will appear here.</div>
+          </section>
+
+          <section class="card">
+            <h2 class="card-title">Sync &amp; Backup</h2>
+            <p class="muted">Send your featured track details to the SoundWave server.</p>
+            <div class="btn-row">
+              <button type="button" class="btn" onclick="postFixedJSON()">Back up as JSON</button>
+              <button type="button" class="btn btn-secondary" onclick="postFixedXML()">Back up as XML</button>
+            </div>
+            <pre id="serverOutput" class="output-box">Server replies will appear here.</pre>
+
+            <h2 class="card-title spaced">Connection check</h2>
+            <p class="muted">Run quick tests to see how the app behaves when something goes wrong.</p>
+            <div class="btn-row">
+              <button type="button" class="btn btn-secondary" onclick="testMissingFile()">Missing file</button>
+              <button type="button" class="btn btn-secondary" onclick="testServerError()">Server error</button>
+              <button type="button" class="btn btn-secondary" onclick="testTimeout()">Slow connection</button>
+            </div>
+            <div id="ajaxOutput" class="ajax-output info">Connection status appears here.</div>
+          </section>
+        </div>
+
+        <section class="card">
+          <h2 class="card-title">Send us feedback</h2>
+          <form id="feedbackForm" onsubmit="return submitFeedback(event)">
+            <fieldset>
+              <legend>Song feedback</legend>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="fbName">Your name</label>
+                  <input type="text" id="fbName" placeholder="Your name" required>
+                </div>
+                <div class="field">
+                  <label for="fbRating">Rating (1 to 5)</label>
+                  <input type="number" id="fbRating" min="1" max="5" value="5" required>
+                </div>
+                <div class="field">
+                  <label for="fbTrack">Track name</label>
+                  <input type="text" id="fbTrack" placeholder="e.g. Midnight Drive" required>
+                </div>
+              </div>
+              <div class="field">
+                <label for="fbReview">Review</label>
+                <textarea id="fbReview" rows="3" placeholder="Tell us what you think..." required></textarea>
+              </div>
+              <button type="submit" class="btn">Send feedback</button>
+            </fieldset>
+          </form>
+          <pre id="feedbackResult" class="output-box">Our reply will appear here.</pre>
+        </section>
+      </section>
+
+    </main>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-small">
+            <svg class="logo-mark small" viewBox="0 0 48 48" aria-hidden="true">
+              <rect width="48" height="48" rx="12" fill="url(#swGrad)"/>
+              <g fill="#0b0b0b">
+                <rect x="9" y="19" width="4" height="10" rx="2"/><rect x="16" y="13" width="4" height="22" rx="2"/>
+                <rect x="23" y="8" width="4" height="32" rx="2"/><rect x="30" y="15" width="4" height="18" rx="2"/>
+                <rect x="37" y="20" width="4" height="8" rx="2"/>
+              </g>
+            </svg>
+            <strong>SoundWave</strong>
+          </div>
+          <p class="muted small">Music for every moment, wherever you are.</p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#charts">Top Charts</a></li>
+            <li><a href="#library">Your Library</a></li>
+            <li><a href="#play">Play &amp; Learn</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://developer.mozilla.org/" target="_blank" rel="noopener">MDN Web Docs</a></li>
+            <li><a href="https://www.w3schools.com/" target="_blank" rel="noopener">W3Schools</a></li>
+            <li><a href="https://www.php.net/manual/en/" target="_blank" rel="noopener">PHP Manual</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="copyright">&copy; 2026 SoundWave. All rights reserved.</p>
+    </footer>
+
+  </div>
+</div>
+
+<!-- ============ PLAYER BAR ============ -->
+<div class="player-bar" id="playerBar">
+  <div class="player-track">
+    <img id="playerThumb" class="player-thumb" data-art="0" alt="Current track cover">
+    <div class="player-meta">
+      <strong id="playerTitle">Midnight Drive</strong>
+      <small id="playerArtist">Neon Waves</small>
+    </div>
+  </div>
+
+  <div class="player-center">
+    <div class="controls">
+      <button type="button" class="ctrl" onclick="prevSong()" aria-label="Previous track"><svg class="icon"><use href="#i-prev"></use></svg></button>
+      <button type="button" class="ctrl play" id="playBtn" onclick="togglePlay()" aria-label="Play or pause"><svg class="icon"><use id="playIcon" href="#i-play"></use></svg></button>
+      <button type="button" class="ctrl" onclick="nextSong()" aria-label="Next track"><svg class="icon"><use href="#i-next"></use></svg></button>
+    </div>
+    <div class="progress-row">
+      <span id="timeCurrent" class="time">0:00</span>
+      <progress id="progressBar" value="0" max="100">0%</progress>
+      <span id="timeTotal" class="time">0:00</span>
+    </div>
+  </div>
+
+  <div class="player-extras">
+    <label for="volumeSlider" class="sr-only">Volume</label>
+    <svg class="icon icon-sm"><use href="#i-volume"></use></svg>
+    <input type="range" id="volumeSlider" min="0" max="100" value="80" onchange="changeVolume(this)">
+    <label for="themePicker" class="theme-label">Accent</label>
+    <input type="color" id="themePicker" value="#1db954" onchange="changeTheme(this)">
+  </div>
+</div>
+
+<!-- ============ SIGN UP MODAL ============ -->
+<div id="registerModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
+  <div class="modal-content">
+    <button type="button" class="close-btn" onclick="closeModal()" aria-label="Close">&times;</button>
+
+    <div class="modal-head">
+      <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true">
+        <rect width="48" height="48" rx="12" fill="url(#swGrad)"/>
+        <g fill="#0b0b0b">
+          <rect x="9" y="19" width="4" height="10" rx="2"/><rect x="16" y="13" width="4" height="22" rx="2"/>
+          <rect x="23" y="8" width="4" height="32" rx="2"/><rect x="30" y="15" width="4" height="18" rx="2"/>
+          <rect x="37" y="20" width="4" height="8" rx="2"/>
+        </g>
+      </svg>
+      <h2 id="signupTitle">Sign up to start listening</h2>
+      <p class="muted small">Create your free SoundWave account.</p>
+    </div>
+
+    <form id="registerForm" action="auth.php" method="POST" onsubmit="return validateRegistration()" novalidate>
+
+      <div class="form-group">
+        <label for="fullName">Full name</label>
+        <input type="text" id="fullName" name="fullname" placeholder="e.g. Asha Rao" required autofocus>
+        <small class="error-message" id="nameError"></small>
+      </div>
+
+      <div class="form-group">
+        <label for="regEmail">Email</label>
+        <input type="email" id="regEmail" name="email" placeholder="you@example.com" required
+               pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
+        <small class="error-message" id="emailError"></small>
+      </div>
+
+      <div class="form-group">
+        <label for="regPhone">Phone number</label>
+        <input type="text" id="regPhone" name="phone" placeholder="10-digit number" required pattern="[0-9]{10}">
+        <small class="error-message" id="phoneError"></small>
+      </div>
+
+      <div class="form-group">
+        <label for="regPassword">Password</label>
+        <input type="password" id="regPassword" name="password" placeholder="At least 6 characters" required>
+        <small class="error-message" id="passwordError"></small>
+      </div>
+
+      <div class="form-group">
+        <label class="check-label"><input type="checkbox" id="regTerms" name="terms" value="yes" required> I accept the Terms and Conditions</label>
+        <small class="error-message" id="termsError"></small>
+      </div>
+
+      <button type="submit" class="btn btn-lg btn-block">Create account</button>
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+<script src="ajax_player.js"></script>
+</body>
+</html>
