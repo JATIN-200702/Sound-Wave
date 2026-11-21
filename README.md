@@ -1,4 +1,4 @@
-# SoundWave – Web Music Player
+# Sound Wave – Web Music Player
 
 **A Web Technology Mini Project**  
 **Project type:** Front-end website with PHP-based server communication  
@@ -8,7 +8,7 @@
 
 ## 1. Project Overview
 
-SoundWave is a Spotify-inspired music player website developed as an educational Web Technology project. It demonstrates how HTML, CSS, JavaScript, AJAX, JSON, XML, and PHP can be used together to build an interactive website.
+Sound Wave is a Spotify-inspired music player website developed as an educational Web Technology project. It demonstrates how HTML, CSS, JavaScript, AJAX, JSON, XML, and PHP can be used together to build an interactive website.
 
 The project provides a music-streaming-style interface where users can browse a sample music catalogue, search for tracks, play audio, view lyrics, create playlist entries, submit feedback, explore library statistics, and test communication between the browser and a PHP server.
 
@@ -16,7 +16,7 @@ The project is intended to demonstrate the concepts covered in the Web Technolog
 
 ## 2. Objectives
 
-The main objectives of SoundWave are to:
+The main objectives of Sound Wave are to:
 
 1. Create a structured webpage using HTML5 elements.
 2. Apply CSS styling, the CSS box model, Flexbox, hover effects, and animations.
@@ -46,7 +46,7 @@ The main objectives of SoundWave are to:
 Place all eight project files together in one folder inside XAMPP's `htdocs` directory.
 
 ```text
-spotify-clone/
+Sound Wave/
 │
 ├── index.html       # Main webpage and user interface
 ├── style.css        # Main stylesheet and visual design
@@ -63,7 +63,7 @@ spotify-clone/
 ### Purpose of each file
 
 #### `index.html`
-Contains the main SoundWave interface, navigation, song sections, charts, library, forms, audio and video elements, player controls, and sign-up modal. It loads the CSS and JavaScript files.
+Contains the main Sound Wave interface, navigation, song sections, charts, library, forms, audio and video elements, player controls, and sign-up modal. It loads the CSS and JavaScript files.
 
 #### `style.css`
 Contains the main visual styling, including colours, typography, layout, cards, navigation, buttons, responsive rules, hover effects, transitions, and animations.
@@ -308,7 +308,7 @@ The following table maps the project files and implemented examples to the 15 ex
 - Internet connection for externally hosted fonts, sample audio, and sample video.
 
 ### Step 1: Copy the project
-Copy the complete `spotify-clone` folder into:
+Copy the complete `Sound Wave` folder into:
 
 ```text
 C:\xampp\htdocs\
@@ -317,7 +317,7 @@ C:\xampp\htdocs\
 The resulting location should be:
 
 ```text
-C:\xampp\htdocs\spotify-clone\
+C:\xampp\htdocs\Sound Wave\
 ```
 
 All eight project files should be directly inside this folder.
@@ -334,13 +334,13 @@ If Apache is configured to use port 8080, use the following project URL.
 ### Step 3: Open the website
 
 ```text
-http://localhost:8080/spotify-clone/
+http://localhost:8080/Sound%20Wave/
 ```
 
 You can also open the main page directly:
 
 ```text
-http://localhost:8080/spotify-clone/index.html
+http://localhost:8080/Sound%20Wave/index.html
 ```
 
 Do not open the PHP files directly from File Explorer. PHP must be executed through Apache using `localhost`.
@@ -350,7 +350,7 @@ Do not open the PHP files directly from File Explorer. PHP must be executed thro
 Open:
 
 ```text
-http://localhost:8080/spotify-clone/server.php
+http://localhost:8080/Sound%20Wave/server.php
 ```
 
 A successful GET request should return a JSON health response containing the service name and server time.
@@ -359,7 +359,7 @@ A successful GET request should return a JSON health response containing the ser
 
 The following sequence can be used during a practical demonstration:
 
-1. Open the SoundWave home page and explain the HTML structure and navigation.
+1. Open the Sound Wave home page and explain the HTML structure and navigation.
 2. Demonstrate the search field and search for a song or artist.
 3. Play a track and show the player controls, volume, and progress bar.
 4. Open Top Charts and explain the dynamically displayed song information.
@@ -378,7 +378,7 @@ The following sequence can be used during a practical demonstration:
 
 | Test | Expected result |
 |---|---|
-| Open the project URL | SoundWave home page loads. |
+| Open the project URL | Sound Wave home page loads. |
 | Search for a song | Matching songs are displayed. |
 | Play a track | Audio starts if the external audio source is available. |
 | Load song catalogue | Song data is retrieved from `data.json`. |
@@ -415,13 +415,13 @@ This project is an educational prototype. The following limitations should be co
 
 ## 13. Conclusion
 
-SoundWave demonstrates the integration of front-end and back-end web technologies in one educational project. It uses HTML5 to structure the website, CSS3 to design the interface, JavaScript to provide interactive functionality, AJAX to exchange data asynchronously, JSON and XML to represent structured information, and PHP to process server requests and forms.
+Sound Wave demonstrates the integration of front-end and back-end web technologies in one educational project. It uses HTML5 to structure the website, CSS3 to design the interface, JavaScript to provide interactive functionality, AJAX to exchange data asynchronously, JSON and XML to represent structured information, and PHP to process server requests and forms.
 
 The project covers practical examples from all 15 experiments in the Web Technology syllabus and provides a single application in which these concepts can be demonstrated and explained.
 
 ---
 
-**Project Name:** SoundWave – Web Music Player  
+**Project Name:** Sound Wave – Web Music Player  
 **Project Category:** Web Technology  
 **Execution Environment:** XAMPP / Apache on localhost  
 **Main Entry File:** `index.html`  
